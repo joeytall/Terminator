@@ -18,7 +18,7 @@ from cx_Freeze import setup, Executable
 
 base = None
 if sys.platform == "win64":
-    base = "Win364GUI"
+    base = "Win64GUI"
 
 includes = ["atexit","re"]
 
