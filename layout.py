@@ -1,12 +1,10 @@
-import wx,os,sys
-import Replace
+import wx,os
 
 class Terminator(wx.Frame):
 
     def __init__(self, parent, title):
         super(Terminator, self).__init__(parent, title=title,
-                size=(520, 400))
-
+            size=(480, 400))
 
         self.currentDirectory = os.getcwd()
         self.InitUI()
@@ -14,6 +12,7 @@ class Terminator(wx.Frame):
         self.Show()
 
     def InitUI(self):
+
         panel = wx.Panel(self)
 
         sizer = wx.GridBagSizer(5, 5)
@@ -23,7 +22,7 @@ class Terminator(wx.Frame):
         text1 = wx.StaticText(panel, label="Folder")
         sizer.Add(text1, pos=(1,0), flag=wx.LEFT, border=10)
 
-        tc1 = wx.TextCtrl(panel, 1)
+        tc1 = wx.TextCtrl(panel)
         sizer.Add(tc1, pos=(1,1), span=(1,2), flag=wx.EXPAND, border=5)
 
         dirBtn = wx.Button(panel, label="Browse")
@@ -35,7 +34,7 @@ class Terminator(wx.Frame):
         text2 = wx.StaticText(panel, label="Replace with")
         sizer.Add(text2, pos=(3,0), flag=wx.LEFT, border=10)
 
-        tc2 = wx.TextCtrl(panel, -1,"",size=(200, 100), style=wx.TE_MULTILINE)
+        tc2 = wx.TextCtrl(panel, -1,"test",size=(200, 100), style=wx.TE_MULTILINE)
         tc2.SetInsertionPoint(0)
         sizer.Add(tc2, pos=(3,1), span=(2,3), flag=wx.EXPAND, border=10)
 
@@ -54,48 +53,33 @@ class Terminator(wx.Frame):
        # line = wx.StaticLine(panel)
        # sizer.Add(line, pos=(1, 0), span=(1, 5), flag=wx.EXPAND|wx.BOTTOM, border=10)
 
+        sb = wx.StaticBox(panel, label="Console")
 
-        console = wx.TextCtrl(panel, -1,"",size=(200, 100), style=wx.TE_MULTILINE|wx.TE_READONLY)
-        console.SetInsertionPoint(0)
-        sizer.Add(console, pos=(6, 0), span=(1, 5), flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.TE_MULTILINE|wx.TE_READONLY, border=10)
+        boxsizer = wx.StaticBoxSizer(sb, wx.VERTICAL)
+        sizer.Add(boxsizer, pos=(5, 0), span=(1, 5), flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT|wx.TE_MULTILINE|wx.TE_READONLY, border=10)
 
-        # redirect text here
-        redir=RedirectText(console)
-        sys.stdout=redir
-
-        button4 = wx.Button(panel, label="Replace")
-        button4.Bind(wx.EVT_BUTTON, self.replace)
-        sizer.Add(button4, pos=(5, 1))
+        button4 = wx.Button(panel, label="Search and Replace")
+        sizer.Add(button4, pos=(7, 2))
 
         button5 = wx.Button(panel, label="Undo")
-        sizer.Add(button5, pos=(5, 2))
+        sizer.Add(button5, pos=(7, 3))
 
         sizer.AddGrowableCol(2)
-        sizer.AddGrowableRow(6)
 
         panel.SetSizer(sizer)
 
     def onDir(self, event):
+        """
+        Show the DirDialog and print the user's choice to stdout
+        """
         dlg = wx.DirDialog(self, "Choose a directory:",
-                style=wx.DD_DEFAULT_STYLE
-                #| wx.DD_DIR_MUST_EXIST
-                #| wx.DD_CHANGE_DIR
-                )
+                           style=wx.DD_DEFAULT_STYLE
+                           #| wx.DD_DIR_MUST_EXIST
+                           #| wx.DD_CHANGE_DIR
+                           )
         if dlg.ShowModal() == wx.ID_OK:
-            self.FindWindowById(1).WriteText(dlg.GetPath())
             print "You chose %s" % dlg.GetPath()
         dlg.Destroy()
-
-    def replace(self,event):
-        path = self.FindWindowById(1).GetValue()
-        Replace.Main(path)
-
-class RedirectText(object):
-    def __init__(self,aWxTextCtrl):
-        self.out=aWxTextCtrl
-
-    def write(self,string):
-        self.out.WriteText(string)
 
 def OnTaskBarRight(event):
     app.ExitMainLoop()
