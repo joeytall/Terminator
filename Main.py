@@ -34,8 +34,8 @@ class Terminator(wx.Frame):
         text2 = wx.StaticText(panel, label="Replace")
         sizer.Add(text2, pos=(3,0), flag=wx.LEFT, border=10)
 
-        tc2 = wx.TextCtrl(panel, 2,"UserRights.CheckAccess('');",size=(200, 100), style=wx.TE_MULTILINE)
-        tc2.SetInsertionPoint(0)
+        tc2 = wx.TextCtrl(panel, 2,"UserRights.CheckAccess(\"\");",size=(200, 100), style=wx.TE_MULTILINE)
+        tc2.SetInsertionPoint(13)
         sizer.Add(tc2, pos=(3,1), span=(2,3), flag=wx.EXPAND, border=10)
 
        # text1 = wx.StaticText(panel, label="An Advanced Search and Replace Tool made by Joey!")
