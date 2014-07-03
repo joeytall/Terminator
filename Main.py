@@ -3,7 +3,7 @@ import Replace
 
 class Terminator(wx.Frame):
 
-    def __init__(self, parent, title):
+    def __init__(self, parent, title, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
         super(Terminator, self).__init__(parent, title=title,
                 size=(520, 400))
 
@@ -123,6 +123,6 @@ def OnTaskBarRight(event):
     app.ExitMainLoop()
 
 if __name__ == '__main__':
-    app = wx.App()
+    app = wx.App(0)
     Terminator(None, title="Terminator")
     app.MainLoop()
