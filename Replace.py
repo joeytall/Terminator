@@ -3,15 +3,18 @@ import os, shutil, errno, datetime, random
 path, folderName, replaceString = "", "", ""
 
 def Main(pathFromUser, replaceStringFromUser):
-  global path, replaceString
+  global path, replaceString, problemfiles
   path = pathFromUser
   replaceString = replaceStringFromUser
-  count = 0
   problemfiles = []
+  count = 0
   mkdir()
 
   for file in os.listdir(path):
-    if file.endswith(".aspx.cs"):
+    if file.endswith("frame.aspx"):
+      problemfiles.append(file)
+      count+=1
+    elif file.endswith(".aspx"):
       shutil.copyfile(path + "/" + file, folderName + "/backup/" + file)
       if replace(file, replaceString) == False:
         problemfiles.append(file)
@@ -26,10 +29,12 @@ def Main(pathFromUser, replaceStringFromUser):
 
 def check():
   file = random.choice(os.listdir(folderName + "/modified"))
-  print (file)
+  while file in problemfiles:
+    file = random.choice(os.listdir(folderName + "/modified"))
+  print (file + "\n")
   with open(folderName + "/modified/" + file) as f:
     for line in f:
-      if 'Page_Init' in line:
+      if 'Azzier.css' in line:
         while replaceString not in line:
           print(line)
           line = next(f)
@@ -49,33 +54,41 @@ def undo():
   print ("Files have been restored!")
 
 def replace(file, replaceString):
+  n = 0
   match = False
   print (file)
   w = open(folderName + "/modified/" + file, "w")
   with open(folderName + "/backup/"+file) as f:
     for line in f:
-      if 'framepanelcontrol' in line:
-        return False
-      if 'Page_Init' in line:
-        w.write(line)
-        match = True
-        line = next(f)
-        w.write(line)
-        line = next(f)
-        if 'RetrieveMessage' in line:
+      #if 'Frame' in line:
+      #   return False
+      if '<head' in line:
+        print (line)
+        while 'zzier.css' not in line:
+          if '/head' in line or n == 10:
+            match == False
+            break
           w.write(line)
-        while 'if' not in line:
           line = next(f)
-        while '}' not in line:
-          print(line)
+          print (line)
+          n += 1
+        else:
+          match = True
+          w.write(line)
+          line = getIndent(line) + replaceString + "\r\n"
+          w.write(line)
           line = next(f)
-        print(line)
-        if '}' in line:
-          line = line.replace('}', replaceString)
+          print (line)
       w.write(line)
   if match == False:
     w.close()
     return False
+
+def getIndent(line, indent = ""):
+  for char in line:
+    if char == " ":
+      indent += char
+    else: return indent
 
 def mkdir():
     now = datetime.datetime.now()
