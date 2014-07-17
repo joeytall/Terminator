@@ -80,7 +80,8 @@ def replace(file, replaceString):
 def mkdir():
     now = datetime.datetime.now()
     global folderName
-    folderName = "result/" + now.strftime("%Y_%m_%d-%H%M")
+    (filepath,folder) = os.path.split(path)
+    folderName = "result/" + folder + now.strftime("-%H%M")
     print (folderName)
     try:
         os.makedirs(folderName)
