@@ -5,7 +5,7 @@ class Terminator(wx.Frame):
 
     def __init__(self, parent, title, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
         super(Terminator, self).__init__(parent, title=title,
-                size=(520, 800))
+                size=(600, 800))
 
         self.currentDirectory = os.getcwd()
         self.InitUI()
@@ -19,34 +19,48 @@ class Terminator(wx.Frame):
 
       ###################################################################
 
-        text1 = wx.StaticText(panel, label="Folder")
-        sizer.Add(text1, pos=(1,0), flag=wx.LEFT, border=10)
+        folder = wx.StaticText(panel, label="Folder")
+        sizer.Add(folder, pos=(1,0), flag=wx.LEFT, border=10)
 
-        tc1 = wx.TextCtrl(panel, 1)
-        sizer.Add(tc1, pos=(1,1), span=(1,2), flag=wx.EXPAND, border=5)
+        foldertc = wx.TextCtrl(panel, 1)
+        sizer.Add(foldertc, pos=(1,1), span=(1,2), flag=wx.EXPAND, border=5)
 
         dirBtn = wx.Button(panel, label="Browse")
         dirBtn.Bind(wx.EVT_BUTTON, self.onDir)
         sizer.Add(dirBtn, pos=(1, 3), flag=wx.RIGHT, border=10)
 
+       ###################################################################
+
+        extension = wx.StaticText(panel, label="File Extension")
+        sizer.Add(extension, pos=(2,0), flag=wx.LEFT, border=10)
+
+        extensiontc = wx.TextCtrl(panel, 3)
+        sizer.Add(extensiontc, pos=(2,1), span=(1,1), flag=wx.EXPAND, border=5)
+
+        exclude = wx.StaticText(panel, label="Exclude File ends with...")
+        sizer.Add(exclude, pos=(2,2), flag=wx.RIGHT, border=10)
+
+        excludetc = wx.TextCtrl(panel, 3)
+        sizer.Add(excludetc, pos=(2,3), flag=wx.LEFT, border=5)
+
       ###################################################################
 
-        text2 = wx.StaticText(panel, label="Replace")
-        sizer.Add(text2, pos=(3,0), flag=wx.LEFT, border=10)
+        replace = wx.StaticText(panel, label="Replace")
+        sizer.Add(replace, pos=(3,0), flag=wx.LEFT, border=10)
 
-        tc2 = wx.TextCtrl(panel, 2,"<link type=\"text/css\" href=\"~/Styles/Customer.css\" rel=\"stylesheet\" />", size=(200, 100), style=wx.TE_MULTILINE)
-        tc2.SetInsertionPoint(13)
-        sizer.Add(tc2, pos=(3,1), span=(2,3), flag=wx.EXPAND, border=10)
+        replacetc = wx.TextCtrl(panel, 2,"<link type=\"text/css\" href=\"~/Styles/Customer.css\" rel=\"stylesheet\" />", size=(200, 100), style=wx.TE_MULTILINE)
+        replacetc.SetInsertionPoint(13)
+        sizer.Add(replacetc, pos=(3,1), span=(2,3), flag=wx.EXPAND, border=10)
 
        # text1 = wx.StaticText(panel, label="An Advanced Search and Replace Tool made by Joey!")
        # sizer.Add(text1, pos=(0,0), span=(1,4), flag=wx.ALIGN_CENTER_HORIZONTAL, border=10)
 
-       # icon = wx.StaticBitmap(panel, bitmap=wx.Bitmap('UI/terminator.gif'))
-       # sizer.Add(icon, pos=(0, 4), flag=wx.TOP|wx.RIGHT|wx.ALIGN_RIGHT, border=5)
+        icon = wx.StaticBitmap(panel, bitmap=wx.Bitmap('terminator.gif'))
+        sizer.Add(icon, pos=(4, 0), flag=wx.TOP|wx.RIGHT|wx.ALIGN_RIGHT, border=5)
 
-       # taskBarIcon = wx.Icon('UI/terminator.ico', wx.BITMAP_TYPE_ICO)
-       # tbicon = wx.TaskBarIcon()
-       # tbicon.SetIcon(taskBarIcon , "I am an Icon")
+        #taskBarIcon = wx.Icon('terminator.ico', wx.BITMAP_TYPE_ICO)
+        #tbicon = wx.TaskBarIcon()
+        #tbicon.SetIcon(taskBarIcon , "I am an Icon")
 
        # wx.EVT_TASKBAR_RIGHT_UP(tbicon, OnTaskBarRight)
 
