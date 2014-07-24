@@ -5,7 +5,7 @@ class Terminator(wx.Frame):
 
     def __init__(self, parent, title, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
         super(Terminator, self).__init__(parent, title=title,
-                size=(520, 400))
+                size=(520, 800))
 
         self.currentDirectory = os.getcwd()
         self.InitUI()
@@ -54,8 +54,10 @@ class Terminator(wx.Frame):
        # sizer.Add(line, pos=(1, 0), span=(1, 5), flag=wx.EXPAND|wx.BOTTOM, border=10)
 
 
-        console = wx.TextCtrl(panel, 3, "",size=(200, 100), style=wx.TE_MULTILINE|wx.TE_READONLY)
+        console = wx.TextCtrl(panel, 3, "",size=(200, 100), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH2)
         console.SetInsertionPoint(0)
+        console.Disable()
+        console.SetDefaultStyle(wx.TextAttr(wx.BLACK))
         sizer.Add(console, pos=(6, 0), span=(1, 5), flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.TE_MULTILINE|wx.TE_READONLY, border=10)
 
         # redirect text here
