@@ -55,7 +55,7 @@ class Terminator(wx.Frame):
        # text1 = wx.StaticText(panel, label="An Advanced Search and Replace Tool made by Joey!")
        # sizer.Add(text1, pos=(0,0), span=(1,4), flag=wx.ALIGN_CENTER_HORIZONTAL, border=10)
 
-        icon = wx.StaticBitmap(panel, bitmap=wx.Bitmap('terminator.gif'))
+        icon = wx.StaticBitmap(panel, bitmap=wx.Bitmap('img/terminator.gif'))
         sizer.Add(icon, pos=(4, 0), flag=wx.TOP|wx.RIGHT|wx.ALIGN_RIGHT, border=5)
 
         #taskBarIcon = wx.Icon('terminator.ico', wx.BITMAP_TYPE_ICO)
