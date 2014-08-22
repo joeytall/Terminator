@@ -12,6 +12,11 @@ class Terminator(wx.Frame):
         self.Centre()
         self.Show()
 
+        randomId = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.onExit, id=randomId)
+        accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL,  ord('W'), randomId )])
+        self.SetAcceleratorTable(accel_tbl)
+
     def InitUI(self):
         panel = wx.Panel(self)
 
@@ -72,7 +77,7 @@ class Terminator(wx.Frame):
         console.SetInsertionPoint(0)
         console.Disable()
         console.SetDefaultStyle(wx.TextAttr(wx.BLACK))
-        sizer.Add(console, pos=(6, 0), span=(1, 5), flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.TE_MULTILINE|wx.TE_READONLY, border=10)
+        sizer.Add(console, pos=(7, 0), span=(1, 5), flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.TE_MULTILINE|wx.TE_READONLY, border=10)
 
         # redirect text here
         redir=RedirectText(console)
@@ -94,8 +99,16 @@ class Terminator(wx.Frame):
         undoBtn.Bind(wx.EVT_BUTTON, self.undo)
         sizer.Add(undoBtn, pos=(5, 3))
 
+        generateBtn = wx.Button(panel, label="GenerateList")
+        generateBtn.Bind(wx.EVT_BUTTON, self.generateList)
+        sizer.Add(generateBtn, pos=(6,1))
+
+        copyBtn = wx.Button(panel, label="CopyImages")
+        copyBtn.Bind(wx.EVT_BUTTON, self.copyImages)
+        sizer.Add(copyBtn, pos=(6,2))
+
         sizer.AddGrowableCol(2)
-        sizer.AddGrowableRow(6)
+        sizer.AddGrowableRow(7)
 
         panel.SetSizer(sizer)
 
@@ -107,6 +120,12 @@ class Terminator(wx.Frame):
 
     def undo(self, event):
       Replace.undo()
+
+    def generateList(self, event):
+      Replace.generateList()
+
+    def copyImages(self, event):
+      Replace.copyImages()
 
     def onDir(self, event):
         last1 = self.FindWindowById(1).GetLastPosition()
@@ -128,6 +147,9 @@ class Terminator(wx.Frame):
         replaceString = self.FindWindowById(2).GetValue()
         Replace.Main(path,replaceString)
 
+    def onExit(self, event):
+        self.Close()
+
 class RedirectText(object):
     def __init__(self,aWxTextCtrl):
         self.out=aWxTextCtrl
@@ -137,6 +159,7 @@ class RedirectText(object):
 
 def OnTaskBarRight(event):
     app.ExitMainLoop()
+
 
 if __name__ == '__main__':
     app = wx.App(0)
