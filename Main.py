@@ -53,7 +53,7 @@ class Terminator(wx.Frame):
         replace = wx.StaticText(panel, label="Replace")
         sizer.Add(replace, pos=(3,0), flag=wx.LEFT, border=10)
 
-        replacetc = wx.TextCtrl(panel, 2,"<link type=\"text/css\" href=\"~/Styles/Customer.css\" rel=\"stylesheet\" />", size=(200, 100), style=wx.TE_MULTILINE)
+        replacetc = wx.TextCtrl(panel, 2,"<link type=\"text/css\" href=\"../Styles/Customer.css\" rel=\"stylesheet\" />", size=(200, 100), style=wx.TE_MULTILINE)
         replacetc.SetInsertionPoint(13)
         sizer.Add(replacetc, pos=(3,1), span=(2,3), flag=wx.EXPAND, border=10)
 
