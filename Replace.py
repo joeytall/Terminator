@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 import os, shutil, errno, datetime, random, pdb
 
 path, folderName, replaceString = "", "", ""
@@ -14,7 +15,7 @@ def Main(pathFromUser, replaceStringFromUser):
   mkdir()
 
   for file in os.listdir(path):
-    if file.endswith((".aspx",".ascx")):
+    if file.endswith(("list.aspx","list.aspx.cs")):
       shutil.copyfile(path + "/" + file, folderName + "/backup/" + file)
       if replace(file, replaceString) == False:
         problemFiles.append(file)
@@ -60,34 +61,91 @@ def undo():
   print ("Files have been restored!")
 
 def replace(file, replaceString):
-  n = 0
-  match = False
   print (file)
   w = open(folderName + "/modified/" + file, "w")
   with open(folderName + "/backup/"+file) as f:
-    for line in f:
-      #if 'Frame' in line:
-      #   return False
-      if '<head' in line:
+    if file.endswith("aspx"):
+      return replaceASPX(f,w)
+    elif file.endswith("cs"):
+      return replaceCS(f,w)
+
+def replaceASPX(f,w):
+  match = False
+  for line in f:
+    if '<body' in line:
+      print (line)
+      while 'RadWindow.js' not in line:
+        if '/body' in line:
+          break
+        w.write(line)
+        line=next(f)
         print (line)
-        while 'Customer.css' not in line:
-          if '/head' in line or n == 10:
-            match = False
-            break
-          w.write(line)
-          line = next(f)
-          print (line)
-          n+=1
-        else:
-          match = True
-          w.write(line)
-          line = getIndent(line) + replaceString + "\r\n"
-          w.write(line)
-          line = next(f)
-          print (line)
-      w.write(line)
-    w.close()
-    return match
+      else:
+        match = True
+        w.write(line)
+        line = getIndent(line) + "<script type=\"text/javascript\" src=\"../Jscript/RadControls.js\"></script>" + "\r\n"
+        w.write(line)
+        print(line)
+        line = next(f)
+        print(line)
+    if '<form' in line:
+      print (line)
+      while 'asp:Panel' not in line:
+        if '/form' in line:
+          match = False
+          break
+        w.write(line)
+        line=next(f)
+        print (line)
+      else:
+        match = True
+        w.write(line)
+        indent = getIndent(line)
+        addLine(w, indent, "<asp:LinkButton ID=\"btnapply\" runat=\"server\" CausesValidation=\"False\" CssClass=\"postback\" href=\"\" OnClientClick=\"btnApply(false); return false;\">\r\n")
+        addLine(w, indent, "  <asp:PlaceHolder ID=\"PlaceHolder3\" runat=\"server\">\r\n")
+        addLine(w, indent, "    <p align=\"center\" >\r\n")
+        addLine(w, indent, "      <asp:Image ID=\"Image3\" runat=\"server\" ImageUrl=\"../images/workorder/update_procedure_32.png\" Height=\"34px\" Width=\"34px\" /><br />\r\n")
+        addLine(w, indent, "         <label>Apply</label>\r\n")
+        addLine(w, indent, "    </p>\r\n")
+        addLine(w, indent, "  </asp:PlaceHolder>\r\n")
+        addLine(w, indent, "</asp:LinkButton>\r\n")
+        line = next(f)
+        print(line)
+    w.write(line)
+  w.close()
+  return match
+
+def replaceCS(f,w):
+  match = False
+  for line in f:
+    if 'RadGrid()' in line:
+      print(line)
+      grid = line.rsplit('=',1)[0].strip()
+      print (grid)
+      while 'OnRowSelected' not in line:
+        if 'SetGridColumns' in line:
+          break
+        w.write(line)
+        line=next(f)
+        print(line)
+      else:
+        match = True
+        indent = getIndent(line)
+        line = line.replace("OnRowSelected","OnRowClick")
+        w.write(line)
+        print(line)
+        addLine(w,indent,"GridSelectColumn.addCheckBoxColumn(mode, " + grid  + ", btnapply);\r\n");
+        line=next(f)
+        print(line)
+    w.write(line)
+  w.close()
+  return match
+
+def addLine(w,indent,newline):
+  line = indent + newline
+  w.write(line)
+  print(line)
+  return
 
 def find_between( s, first, last ):
   start = s.index( first ) + len( first )
