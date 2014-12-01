@@ -1,5 +1,5 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
-import os, shutil, errno, datetime, random, pdb
+import os, shutil, errno, datetime, random, pdb, Sqlscript
 
 path, folderName, replaceString = "", "", ""
 imgPath = "/Volumes/Webwork/Production/Azzierdev/Images2"
@@ -15,7 +15,7 @@ def Main(pathFromUser, replaceStringFromUser):
   mkdir()
 
   for file in os.listdir(path):
-    if file.endswith(("list.aspx","list.aspx.cs")):
+    if file.endswith(("list.aspx","list.aspx.cs")) and not file.endswith(("admindivlist.aspx","approvalist.aspx","wotypelist.aspx","districtlist.aspx")):
       shutil.copyfile(path + "/" + file, folderName + "/backup/" + file)
       if replace(file, replaceString) == False:
         problemFiles.append(file)
@@ -31,8 +31,9 @@ def Main(pathFromUser, replaceStringFromUser):
   if len(problemFiles) != 0:
     print ("\nProblem Files: " + ', '.join(problemFiles))
   if len(replacedFiles) != 0:
-    print ("\nReplaced Files: " + ', '.join(replacedFiles))
+    print ("\nReplaced Files: " + '\r\n '.join(replacedFiles))
   print ("******************************************************************************************************************")
+  Sqlscript.generateSql(replacedFiles, folderName);
   return
 
 def check():
@@ -45,9 +46,23 @@ def check():
     file = random.choice(os.listdir(folderName + "/modified"))
   print (file + "\n")
   with open(folderName + "/modified/" + file) as f:
-    for line in f:
-      if 'Customer.css' in line:
-        print (line)
+    if file.endswith("aspx"):
+      for line in f:
+        if '<body' in line:
+          print (line)
+          while '/body' not in line:
+            line = next(f)
+            print (line)
+          else:
+            print (line)
+            break
+    elif file.endswith("cs"):
+      for line in f:
+        if 'OnRowClick' in line:
+          print (line)
+          line = next(f)
+          print (line)
+          break
     return
 
 def applyChanges():
@@ -90,7 +105,7 @@ def replaceASPX(f,w):
         print(line)
     if '<form' in line:
       print (line)
-      while 'asp:Panel' not in line:
+      while 'asp:Panel' not in line and 'RadAjaxPanel' not in line:
         if '/form' in line:
           match = False
           break
@@ -101,11 +116,23 @@ def replaceASPX(f,w):
         match = True
         w.write(line)
         indent = getIndent(line)
-        addLine(w, indent, "<asp:LinkButton ID=\"btnapply\" runat=\"server\" CausesValidation=\"False\" CssClass=\"postback\" href=\"\" OnClientClick=\"btnApply(false); return false;\">\r\n")
-        addLine(w, indent, "  <asp:PlaceHolder ID=\"PlaceHolder3\" runat=\"server\">\r\n")
+        addLine(w, indent, "<asp:LinkButton ID=\"btnapply\" runat=\"server\" CausesValidation=\"False\" CssClass=\"postback\" href=\"\" OnClientClick=\"getSelectedLookupItems(); return false;\">\r\n")
+        addLine(w, indent, "  <asp:PlaceHolder ID=\"PlaceHolder1\" runat=\"server\">\r\n")
         addLine(w, indent, "    <p align=\"center\" >\r\n")
-        addLine(w, indent, "      <asp:Image ID=\"Image3\" runat=\"server\" ImageUrl=\"../images/workorder/update_procedure_32.png\" Height=\"34px\" Width=\"34px\" /><br />\r\n")
+        addLine(w, indent, "      <asp:Image ID=\"Image1\" runat=\"server\"\r\n ")
+        addLine(w, indent, "        OnMouseOver=\"src='../IMAGES/Return_selected_over_24.png';\"\r\n")
+        addLine(w, indent, "        OnMouseOut=\"src='../IMAGES/Return_selected_24.png';\"\r\n")
+        addLine(w, indent, "        ImageUrl=\"../IMAGES/Return_selected_24.png\" Height=\"24\" Width=\"24px\" /><br />\r\n")
         addLine(w, indent, "         <label>Apply</label>\r\n")
+        addLine(w, indent, "    </p>\r\n")
+        addLine(w, indent, "  </asp:PlaceHolder>\r\n")
+        addLine(w, indent, "</asp:LinkButton>\r\n")
+        addLine(w, indent, "<asp:LinkButton ID=\"btncancel\" runat=\"server\" CausesValidation=\"False\" OnClientClick=\"radwindowClose(); return false;\">\r\n")
+        addLine(w, indent, "  <asp:PlaceHolder ID=\"PlaceHolder2\" runat=\"server\">\r\n")
+        addLine(w, indent, "    <p align=\"center\" >\r\n")
+        addLine(w, indent, "      <asp:Image ID=\"Image2\" runat=\"server\"\r\n ")
+        addLine(w, indent, "        ImageUrl=\"../IMAGES/can.gif\" Height=\"24\" Width=\"24px\" /><br />\r\n")
+        addLine(w, indent, "         <label>Cancel</label>\r\n")
         addLine(w, indent, "    </p>\r\n")
         addLine(w, indent, "  </asp:PlaceHolder>\r\n")
         addLine(w, indent, "</asp:LinkButton>\r\n")
@@ -121,7 +148,6 @@ def replaceCS(f,w):
     if 'RadGrid()' in line:
       print(line)
       grid = line.rsplit('=',1)[0].strip()
-      print (grid)
       while 'OnRowSelected' not in line:
         if 'SetGridColumns' in line:
           break
